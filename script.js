@@ -1,5 +1,29 @@
 // Snow effect for mobile
 document.addEventListener('DOMContentLoaded', function() {
+    const bannerOverlay = document.querySelector('.banner-overlay');
+    const statusTimeElement = document.getElementById('status-time');
+    const statusGiftsElement = document.getElementById('status-gifts');
+    const bodyElement = document.body;
+    const DEFAULT_GIFT_COUNT = 50;
+    const APP_SCRIPT_CONFIG = {
+        /**
+         * URL Web App đã deploy từ Apps Script (Execute as: Me, Access: Anyone)
+         * Ví dụ: https://script.google.com/macros/s/XXX/exec
+         */
+        endpoint: '',
+        /**
+         * SECRET_KEY phải trùng với hằng số trong Apps Script (ví dụ: 'parcmall12')
+         */
+        secretKey: ''
+    };
+    if (bannerOverlay) {
+        const changeover = new Date(2025, 11, 7, 0, 0, 0); // 7 Dec 2025 local time
+        bannerOverlay.src = new Date() < changeover ? 'images/1.png' : 'images/2.png';
+    }
+
+    setLoadingState(true);
+    hydrateGiftCount();
+
     const snowContainer = document.getElementById('snow-container');
     const snowflakes = ['❄', '❅', '❆', '✻', '✼', '❉'];
     
@@ -78,4 +102,77 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start snow effect
     initSnow();
+
+    async function hydrateGiftCount() {
+        setLoadingState(true);
+        try {
+            const count = await fetchGiftCount();
+            updateGiftState(count);
+            updateTimeStamp();
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    function updateGiftState(count) {
+        const parsedCount = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : DEFAULT_GIFT_COUNT;
+        if (statusGiftsElement) {
+            statusGiftsElement.textContent = `Quà còn lại: ${parsedCount}`;
+        }
+        bodyElement.classList.toggle('sold-out-active', parsedCount <= 0);
+    }
+
+    function setLoadingState(isLoading) {
+        bodyElement.classList.toggle('loading-gifts', isLoading);
+    }
+
+    async function fetchGiftCount() {
+        const { endpoint, secretKey } = APP_SCRIPT_CONFIG;
+        if (!endpoint || !secretKey) {
+            console.warn('APP_SCRIPT_CONFIG chưa cấu hình endpoint/secretKey, dùng mặc định.');
+            return DEFAULT_GIFT_COUNT;
+        }
+        try {
+            const url = buildAppScriptUrl(endpoint, secretKey);
+            // Dùng fetch GET đơn giản để tránh preflight CORS
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`App Script error: ${response.status}`);
+            }
+            const payload = await response.json();
+            const value = extractGiftCountFromAppScript(payload);
+            return Number.isFinite(value) ? value : DEFAULT_GIFT_COUNT;
+        } catch (error) {
+            console.error('Không thể lấy dữ liệu từ Apps Script:', error);
+            return DEFAULT_GIFT_COUNT;
+        }
+    }
+
+    function extractGiftCountFromAppScript(payload) {
+        if (!payload || typeof payload !== 'object') {
+            return DEFAULT_GIFT_COUNT;
+        }
+        if (typeof payload.giftsLeft === 'number') {
+            return payload.giftsLeft;
+        }
+        const numeric = Number(payload.giftsLeft);
+        return Number.isFinite(numeric) ? numeric : DEFAULT_GIFT_COUNT;
+    }
+
+    function buildAppScriptUrl(endpoint, secretKey) {
+        const base = endpoint.trim();
+        const hasQuery = base.includes('?');
+        const sep = hasQuery ? '&' : '?';
+        const cb = Date.now();
+        return `${base}${sep}key=${encodeURIComponent(secretKey)}&cb=${cb}`;
+    }
+
+    function updateTimeStamp() {
+        if (!statusTimeElement) return;
+        const now = new Date();
+        const two = (n) => n.toString().padStart(2, '0');
+        const time = `${two(now.getHours())}:${two(now.getMinutes())}`;
+        const date = `${two(now.getDate())}/${two(now.getMonth() + 1)}/${now.getFullYear()}`;
+        statusTimeElement.textContent = `${time} ${date}`;
+    }
 });

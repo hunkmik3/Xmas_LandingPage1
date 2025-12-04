@@ -21,6 +21,49 @@ body {
     justify-content: center;
 }
 
+/* Top status bar: time + remaining gifts */
+.top-status-bar {
+    position: fixed;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    padding: 4px 26px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.86rem;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.top-status-separator {
+    opacity: 0.8;
+}
+
+@media (max-width: 480px) {
+    .top-status-bar {
+        top: 6px;
+        font-size: 0.82rem;
+        padding: 4px 20px;
+    }
+}
+
+/* Ẩn thanh trạng thái khi đang loading gifts */
+body.loading-gifts .top-status-bar {
+    display: none;
+}
+
+body.sold-out-active {
+    background: #000;
+}
+
 /* Font DFVN Modak */
 @font-face {
     font-family: 'DFVN Modak';
@@ -36,6 +79,49 @@ body {
     position: relative;
     width: 100%;
     z-index: 1;
+}
+
+body.sold-out-active .banner-wrapper {
+    display: none;
+}
+
+/* Loading state when checking gifts */
+body.loading-gifts {
+    overflow: hidden;
+}
+
+body.loading-gifts::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9000;
+}
+
+body.loading-gifts::after {
+    content: 'Đang kiểm tra quà...';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 1.1rem;
+    font-family: 'DFVN Modak', system-ui, sans-serif;
+    text-align: center;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    z-index: 9100;
+}
+
+/* Khi loading thì ẩn toàn bộ nội dung phía sau */
+body.loading-gifts .banner-wrapper,
+body.loading-gifts #snow-container,
+body.loading-gifts .sold-out {
+    display: none;
 }
 
 /* Banner Image - Optimized for Mobile */
@@ -122,4 +208,63 @@ body {
     100% {
         transform: translateY(100vh) translateX(-10px) rotate(360deg);
     }
+}
+
+/* Sold-out state */
+.sold-out {
+    display: none;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    justify-content: center;
+}
+
+.sold-out img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+body.sold-out-active .sold-out {
+    display: flex;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    background: #000;
+    color: #fff;
+    z-index: 5;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    padding: 1rem;
+}
+
+.loading-overlay p {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #ffd966;
+    animation: spin 1s linear infinite;
+}
+
+body.loading-state .loading-overlay {
+    display: flex;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

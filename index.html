@@ -8,10 +8,22 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="top-status-bar">
+        <span id="status-time">--:-- --/--/----</span>
+        <span class="top-status-separator">-</span>
+        <span id="status-gifts">Quà còn lại: --</span>
+    </div>
     <div id="snow-container"></div>
-    <div class="banner-wrapper">
+    <div class="loading-overlay" aria-live="polite" aria-busy="true">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p>Đang tải dữ liệu quà...</p>
+    </div>
+    <div class="banner-wrapper" aria-live="polite">
         <img src="images/Background.png" alt="Banner Background" class="banner-image">
         <img src="images/1.png" alt="Overlay Image" class="banner-overlay">
+    </div>
+    <div class="sold-out" aria-live="assertive">
+        <img src="images/hetqua.png" alt="Hết quà">
     </div>
     <script src="script.js"></script>
 </body>
