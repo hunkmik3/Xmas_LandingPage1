@@ -8,13 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const APP_SCRIPT_CONFIG = {
         /**
          * URL Web App đã deploy từ Apps Script (Execute as: Me, Access: Anyone)
-         * Ví dụ: https://script.google.com/macros/s/XXX/exec
          */
-        endpoint: '',
+        endpoint: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLg0M3qBzaUCG2wi7MzCtjLNHb1Q6f88P5qkoTeJGivOzdxX5jfJRRHnPdIGGFStHAP8KN5b1-jqfBKFLRapa5KCB55EAvIpKA3F82h4sENhTRgbrZpOT7Ru56HvuBrBUDwh3knS563UxBkEM3W_m4iSCyiqEYonvxI70zIkKxKOnAO76XhHWyadltUP7jgoQAK8tzkppmT5SomAbLMgsEC4RXQsWrpWZg8pZRRPpoacX6Yo1I7N6IxeM8qB6spYumz-4E4gctV4OXNNQFW8nourinz0U-LGFABqSrHtNnX6xBaZTj4&lib=MAkIPrzFL1XZAS9O_aKOYZPw6We1Ifjug',
         /**
          * SECRET_KEY phải trùng với hằng số trong Apps Script (ví dụ: 'parcmall12')
          */
-        secretKey: ''
+        secretKey: 'parcmall12'
     };
     if (bannerOverlay) {
         const changeover = new Date(2025, 11, 7, 0, 0, 0); // 7 Dec 2025 local time
